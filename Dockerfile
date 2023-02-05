@@ -1,19 +1,19 @@
-FROM python:3.9
-COPY . ~/jian-clip/
-WORKDIR ~/jian-clip/ 
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-&& echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-&& apt-get update -y \
-&& apt-get install yarn -y \
-&& apt-get install ffmpeg -y \
-&& echo ffmpeg -version \
-&& echo yarn --version \
-&& cd ./pick \
-&& yarn \
-&& yarn build
+FROM rust
+COPY . /app 
+WORKDIR /app
 
-RUN pip install -r ./hello-jina2/requirements.txt 
-RUN pip install git+https://github.com/openai/CLIP.git
+RUN apt-get update \
+# python jina 构建 
+&& apt-get install python3.9 pip nodejs npm -y \
+&& pip install -r ./hello-jina2/requirements.txt \
+&& pip install git+https://github.com/openai/CLIP.git \
+# yarn
+&& npm i yarn -g \
+# 前端构建
+&& cd pick && yarn && yarn build \
+# python 软链接
+&& cd /usr/bin && ln -s python3 python 
 
+# container
 EXPOSE 3001
-CMD node ~/jian-clip/pick/dist/main.js
+ENTRYPOINT ["node", "./pick/dist/main"]
