@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN apt-get update \
 # python jina 构建 
-&& apt-get install python3.9 pip nodejs npm -y \
+&& apt-get install python3.9 pip ffmpeg nodejs npm -y \
 && pip install -r ./hello-jina2/requirements.txt \
 && pip install git+https://github.com/openai/CLIP.git \
 # yarn
@@ -16,4 +16,4 @@ RUN apt-get update \
 
 # container
 EXPOSE 3001
-ENTRYPOINT ["node", "./pick/dist/main"]
+CMD ["node", "./pick/dist/main"]
